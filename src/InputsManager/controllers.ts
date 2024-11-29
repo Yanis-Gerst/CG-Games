@@ -4,8 +4,12 @@ import {
   ExecuteCodeAction,
   Scene,
 } from "@babylonjs/core";
-import { baseKeys } from "../utils/import";
 import { Command } from "./Commands/Command";
+import { baseKeys } from "../utils/utils";
+
+/*
+Le controller gère tous les entrer clavier et gère l'éxécution et la fin des commandes quelles touches sont activer
+*/
 
 export class Controller {
   private keysStatus: { [key: string]: boolean };
@@ -35,9 +39,9 @@ export class Controller {
         let key = event.sourceEvent.key.toLowerCase();
 
         if (key in this.getKeysStatus()) {
+          console.log(key in this.getKeysStatus());
           this.setKeys(key, true);
         }
-        console.log(this.keysStatus);
       })
     );
 
@@ -48,7 +52,6 @@ export class Controller {
         if (key in this.getKeysStatus()) {
           this.setKeys(key, false);
         }
-        console.log(this.keysStatus);
       })
     );
   }

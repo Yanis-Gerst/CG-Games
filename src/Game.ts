@@ -10,7 +10,7 @@ import {
   Vector3,
 } from "@babylonjs/core";
 import { PlayableCharacter } from "./GameObject/PlayableCharacter";
-import { importModel } from "./utils/import";
+import { importModel } from "./utils/utils";
 
 const PLAYER_MODEL = "Player.glb";
 

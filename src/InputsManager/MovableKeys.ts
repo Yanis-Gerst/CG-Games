@@ -1,4 +1,4 @@
-import { IDirection } from "../utils/import";
+import { IDirection } from "../utils/type";
 import { Command } from "./Commands/Command";
 import { MoveCommandFactory } from "./Commands/MoveCommandFactory";
 import { Game } from "../Game";

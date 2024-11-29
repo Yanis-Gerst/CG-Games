@@ -1,5 +1,5 @@
 import { Game } from "../../Game";
-import { IDirection } from "../../utils/import";
+import { IDirection } from "../../utils/type";
 import { MoveCommand } from "./MoveCommand";
 
 export class MoveCommandFactory {
@@ -7,8 +7,6 @@ export class MoveCommandFactory {
   constructor(game: Game) {
     this.game = game;
   }
-
-  getCommandForAllDirections() {}
 
   getCommandForDirection(direction: IDirection) {
     switch (direction) {

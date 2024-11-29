@@ -1,7 +1,3 @@
-import { Scene, SceneLoader } from "@babylonjs/core";
-
-export const baseKeys = ["z", "q", "d", "s"] as const;
-
 export type Ikeys =
   | "moveUp"
   | "moveDown"
@@ -32,11 +28,7 @@ export type IDirection =
   | "downRight"
   | "downLeft";
 
-export const importModel = async (scene: Scene, fileName: string) => {
-  return await SceneLoader.ImportMeshAsync(
-    "",
-    "./src/models/",
-    fileName,
-    scene
-  );
-};
+export interface ICommand {
+  execute: () => void;
+  finish: () => void;
+}

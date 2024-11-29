@@ -19,13 +19,13 @@ export class MoveCommand extends Command {
   }
 
   execute(): void {
-    console.log(this.axis);
     this.axis.forEach((axi) => {
       const minus = axi.includes("-");
       const currentAxi = axi.replace("-", "") as IAxis;
       let positionToUpdate = this.game.player.speed / this.axis.length;
       positionToUpdate = minus ? -positionToUpdate : positionToUpdate;
       this.game.player.root.position[currentAxi] += positionToUpdate;
+      //Todo: Faire un système d'animation
       this.game.player.playAnimation("Rotation");
     });
   }
