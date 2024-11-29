@@ -1,48 +1,40 @@
-import { Scene } from "@babylonjs/core";
-import { PlayableCharacter } from "../GameObject/PlayableCharacter";
-import { baseKeys } from "../utils/import";
-import { Controller } from "./controllers";
+import { IDirection } from "../utils/import";
+import { Command } from "./Commands/Command";
+import { MoveCommandFactory } from "./Commands/MoveCommandFactory";
+import { Game } from "../Game";
+import { Controller } from "./Controllers";
 
-const positionUpdateOnKey = {
-  z: 1,
-  s: -1,
-  q: -1,
-  d: 1,
+type IMoveCommand = {
+  [key in IDirection]: Command;
 };
+
+const directions: IDirection[] = [
+  "up",
+  "left",
+  "right",
+  "down",
+  "upRight",
+  "upLeft",
+  "downRight",
+  "downLeft",
+] as const;
+
 export class MovableKeys {
-  player: PlayableCharacter;
+  game: Game;
   controller: Controller;
-  scene: Scene;
+  moveCommand: IMoveCommand;
 
-  constructor(player: PlayableCharacter, controller: Controller, scene: Scene) {
-    this.player = player;
+  constructor(game: Game, controller: Controller) {
+    this.game = game;
     this.controller = controller;
-    this.scene = scene;
-  }
-
-  setupMovementOnKeyPress() {
-    baseKeys.forEach((key) => {
-      this.controller.onKeyPress(
-        this.scene,
-        key,
-        () => {
-          const positionToUpdate = key === "z" || key === "s" ? "z" : "x";
-          this.player.root.position[positionToUpdate] +=
-            positionUpdateOnKey[key];
-        },
-        () => {}
+    const commandFactory = new MoveCommandFactory(game);
+    this.moveCommand = {} as IMoveCommand;
+    directions.forEach((direction) => {
+      this.controller.commands.push(
+        commandFactory.getCommandForDirection(direction)
       );
-    });
-  }
-
-  setupAnimationOnPlayerMouvement() {
-    this.scene.onBeforeRenderObservable.add(() => {
-      if (this.controller.oneKeyIsPress()) {
-        console.log("Aniamtion ");
-        this.player.playAnimation("Rotation");
-      } else {
-        this.player.stopAnimation("Rotation");
-      }
+      this.moveCommand[direction] =
+        commandFactory.getCommandForDirection(direction);
     });
   }
 }

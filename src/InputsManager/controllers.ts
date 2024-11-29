@@ -5,15 +5,20 @@ import {
   Scene,
 } from "@babylonjs/core";
 import { baseKeys } from "../utils/import";
+import { Command } from "./Commands/Command";
 
 export class Controller {
   private keysStatus: { [key: string]: boolean };
   scene: Scene;
+  public commands: Command[];
+  private activeCommands: Command[];
 
   constructor(scene: Scene) {
     this.keysStatus = {};
     this.scene = scene;
     baseKeys.forEach((key) => (this.keysStatus[key] = false));
+    this.commands = [];
+    this.activeCommands = [];
   }
 
   getKeysStatus() {
@@ -32,7 +37,7 @@ export class Controller {
         if (key in this.getKeysStatus()) {
           this.setKeys(key, true);
         }
-        console.log(this.getKeysStatus());
+        console.log(this.keysStatus);
       })
     );
 
@@ -43,23 +48,19 @@ export class Controller {
         if (key in this.getKeysStatus()) {
           this.setKeys(key, false);
         }
-        console.log(this.getKeysStatus());
+        console.log(this.keysStatus);
       })
     );
   }
 
-  onKeyPress(
-    scene: Scene,
-    key: string,
-    keyPressCb: CallableFunction,
-    keyReleaseCb: CallableFunction
-  ) {
-    scene.onBeforeRenderObservable.add(() => {
-      if (this.pressedKey().includes(key)) {
-        keyPressCb();
-      } else {
-        keyReleaseCb();
-      }
+  handleCommands() {
+    this.scene.onBeforeRenderObservable.add(() => {
+      const finishCommand = this.activeCommands.filter(
+        (cmd) => !cmd.condition(this)
+      );
+      this.activeCommands = this.commands.filter((cmd) => cmd.condition(this));
+      this.activeCommands.forEach((cmd) => cmd.execute());
+      finishCommand.forEach((cmd) => cmd.finish());
     });
   }
 
