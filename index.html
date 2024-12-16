@@ -17,6 +17,24 @@
         class="w-screen h-screen"
         touch-action="none"
       ></canvas>
+
+      <div
+        id="healthBar"
+        style="
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          width: 200px;
+          height: 20px;
+          background-color: #333;
+          border: 2px solid #000;
+        "
+      >
+        <div
+          id="health"
+          style="width: 100%; height: 100%; background-color: #00ff00"
+        ></div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

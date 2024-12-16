@@ -3,14 +3,18 @@ import {
   ArcFollowCamera,
   Color3,
   Engine,
+  HavokPlugin,
   HemisphericLight,
+  IPhysicsCollisionEvent,
   MeshBuilder,
+  Observable,
   Scene,
   SceneLoader,
   StandardMaterial,
   TargetCamera,
   Vector3,
 } from "@babylonjs/core";
+import HavokPhysics from "@babylonjs/havok";
 import { Controller } from "./shared/InputsManager/Controllers";
 import { PlayableCharacter } from "./features/PlayableCharacter/PlayableCharacter";
 import { Ennemy } from "./features/Ennemy/Ennemy";
@@ -24,6 +28,8 @@ export class Game {
   controller: Controller;
   player!: PlayableCharacter;
   camera!: TargetCamera;
+  physicsPlugin!: HavokPlugin;
+  collisionObservable!: Observable<IPhysicsCollisionEvent>;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -35,6 +41,7 @@ export class Game {
 
   async init() {
     this.createBaseScene();
+    await this.initPhysics();
     await this.createPlayer();
     await this.createEnnemy();
     this.cameraSetup();
@@ -50,7 +57,8 @@ export class Game {
         "Player.glb",
         this.scene
       ),
-      this
+      this,
+      new Vector3(15, this.getPlayer().root.position.y, 15)
     );
   }
 
@@ -80,12 +88,20 @@ export class Game {
     this.player.initCommands();
   }
 
+  async initPhysics() {
+    var gravityVector = new Vector3(0, -9.81, 0);
+    const havokInstance = await HavokPhysics();
+    this.physicsPlugin = new HavokPlugin(true, havokInstance);
+    this.scene.enablePhysics(gravityVector, this.physicsPlugin);
+    this.collisionObservable = this.physicsPlugin.onCollisionObservable;
+  }
+
   cameraSetup() {
     this.camera = new ArcFollowCamera(
       "camera",
       -Math.PI / 2,
       Math.PI / 4,
-      60,
+      50,
       this.player.root,
       this.scene
     );
@@ -115,5 +131,9 @@ export class Game {
 
   getPlayer() {
     return this.player;
+  }
+
+  getCollisionObservable() {
+    return this.collisionObservable;
   }
 }

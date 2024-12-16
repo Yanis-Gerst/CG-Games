@@ -7,14 +7,19 @@ import { PlayerAnimation } from "./PlayerAnimation";
 
 export class PlayableCharacter extends GameObject {
   movableKeys!: MovableKeys;
-  speed = 2.5;
+  speed = 0.5;
+  invincibleTime = 200;
   isMoving = false;
+  hp: number;
+  isInvincible = false;
   currentDirection: IDirection | null = null;
   playerAnimation: PlayerAnimation;
 
   constructor(model: ISceneLoaderAsyncResult, game: Game) {
     super(model, game);
     this.playerAnimation = new PlayerAnimation(this);
+    this.hp = 100;
+    this.root.setBoundingInfo(this.model.meshes[2].getBoundingInfo());
   }
 
   initCommands() {
@@ -33,5 +38,14 @@ export class PlayableCharacter extends GameObject {
         : null;
       this.playerAnimation.animate();
     });
+  }
+
+  public takeDamage(damage: number) {
+    if (this.isInvincible || this.hp <= 0) return;
+    this.hp -= damage;
+    this.isInvincible = true;
+    setTimeout(() => {
+      this.isInvincible = false;
+    }, this.invincibleTime);
   }
 }

@@ -1,4 +1,4 @@
-import { Scene, SceneLoader } from "@babylonjs/core";
+import { BoundingInfo, Scene, SceneLoader, Vector3 } from "@babylonjs/core";
 
 export const baseKeys = ["z", "q", "d", "s", "a"] as const;
 
