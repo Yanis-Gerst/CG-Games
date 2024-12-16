@@ -40,7 +40,6 @@ export class Controller {
         let key = event.sourceEvent.key.toLowerCase();
 
         if (key in this.getKeysStatus()) {
-          console.log(key in this.getKeysStatus());
           this.setKeys(key, true);
         }
       })

@@ -27,6 +27,7 @@ export class Game {
   scene: Scene;
   controller: Controller;
   player!: PlayableCharacter;
+  ennemy!: Ennemy[];
   camera!: TargetCamera;
   physicsPlugin!: HavokPlugin;
   collisionObservable!: Observable<IPhysicsCollisionEvent>;
@@ -50,7 +51,7 @@ export class Game {
   }
 
   async createEnnemy() {
-    new Ennemy(
+    const aloneEnnemy = new Ennemy(
       await SceneLoader.ImportMeshAsync(
         null,
         "./src/features/Ennemy/models/",
@@ -60,6 +61,7 @@ export class Game {
       this,
       new Vector3(15, this.getPlayer().root.position.y, 15)
     );
+    this.ennemy = [aloneEnnemy];
   }
 
   createBaseScene() {
@@ -135,5 +137,9 @@ export class Game {
 
   getCollisionObservable() {
     return this.collisionObservable;
+  }
+
+  getEnnemy() {
+    return this.ennemy;
   }
 }

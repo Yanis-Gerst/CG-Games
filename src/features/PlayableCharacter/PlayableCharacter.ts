@@ -4,6 +4,7 @@ import { MovableKeys } from "../../shared/InputsManager/MovableKeys";
 import { Game } from "../../Game";
 import { IDirection } from "../../shared/utils/type";
 import { PlayerAnimation } from "./PlayerAnimation";
+import { Weapon } from "../Weapon/Weapon";
 
 export class PlayableCharacter extends GameObject {
   movableKeys!: MovableKeys;
@@ -14,12 +15,14 @@ export class PlayableCharacter extends GameObject {
   isInvincible = false;
   currentDirection: IDirection | null = null;
   playerAnimation: PlayerAnimation;
+  weapon: Weapon;
 
   constructor(model: ISceneLoaderAsyncResult, game: Game) {
     super(model, game);
     this.playerAnimation = new PlayerAnimation(this);
     this.hp = 100;
     this.root.setBoundingInfo(this.model.meshes[2].getBoundingInfo());
+    this.weapon = new Weapon(game);
   }
 
   initCommands() {
@@ -38,6 +41,7 @@ export class PlayableCharacter extends GameObject {
         : null;
       this.playerAnimation.animate();
     });
+    this.weapon.activate();
   }
 
   public takeDamage(damage: number) {

@@ -1,4 +1,9 @@
-import { ISceneLoaderAsyncResult, Vector3 } from "@babylonjs/core";
+import {
+  ISceneLoaderAsyncResult,
+  Observable,
+  Scene,
+  Vector3,
+} from "@babylonjs/core";
 import { GameObject } from "../../shared/GameObject";
 import { Game } from "../../Game";
 
@@ -7,6 +12,7 @@ export class Ennemy extends GameObject {
   private moveSpeed: number;
   private attack: number;
   private isIntersectionPlayer = false;
+  private moveOberserver: any;
 
   constructor(
     model: ISceneLoaderAsyncResult,
@@ -28,25 +34,37 @@ export class Ennemy extends GameObject {
   }
 
   public move() {
-    this.game.getScene().onBeforeRenderObservable.add(() => {
-      this.isIntersectionPlayer = this.root.intersectsMesh(
-        this.game.getPlayer().root,
-        false
-      );
-      const distanceToPlayer = this.root.position.subtract(
-        this.game.getPlayer().root.position
-      );
+    this.moveOberserver = this.game
+      .getScene()
+      .onBeforeRenderObservable.add(() => {
+        this.isIntersectionPlayer = this.root.intersectsMesh(
+          this.game.getPlayer().root,
+          false
+        );
+        const distanceToPlayer = this.root.position.subtract(
+          this.game.getPlayer().root.position
+        );
 
-      if (this.isIntersectionPlayer) {
-        if (!this.game.getPlayer().isInvincible) {
-          this.game.getPlayer().takeDamage(this.attack);
+        if (this.isIntersectionPlayer) {
+          if (!this.game.getPlayer().isInvincible) {
+            this.game.getPlayer().takeDamage(this.attack);
+          }
+          return;
         }
-        return;
-      }
-      const targetVectorNorm = Vector3.Normalize(distanceToPlayer);
-      this.root.position = this.root.position.subtract(
-        targetVectorNorm.scale(this.moveSpeed)
-      );
-    });
+        const targetVectorNorm = Vector3.Normalize(distanceToPlayer);
+        this.root.position = this.root.position.subtract(
+          targetVectorNorm.scale(this.moveSpeed)
+        );
+      });
+  }
+
+  public takeDamage(damage: number) {
+    this.hp -= damage;
+    console.log(this.hp, "ennemy");
+    if (this.hp <= 0) {
+      this.game.getEnnemy().splice(this.game.getEnnemy().indexOf(this), 1);
+      this.root.dispose();
+      this.moveOberserver.remove();
+    }
   }
 }
