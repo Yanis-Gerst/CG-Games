@@ -1,16 +1,19 @@
 import {
   ActionManager,
-  ArcRotateCamera,
+  ArcFollowCamera,
   Color3,
   Engine,
   HemisphericLight,
   MeshBuilder,
   Scene,
+  SceneLoader,
   StandardMaterial,
+  TargetCamera,
   Vector3,
 } from "@babylonjs/core";
-import { PlayableCharacter } from "./GameObject/PlayableCharacter";
-import { importModel } from "./utils/utils";
+import { Controller } from "./shared/InputsManager/Controllers";
+import { PlayableCharacter } from "./features/PlayableCharacter/PlayableCharacter";
+import { Ennemy } from "./features/Ennemy/Ennemy";
 
 const PLAYER_MODEL = "Player.glb";
 
@@ -18,25 +21,40 @@ export class Game {
   canvas: HTMLCanvasElement;
   engine: Engine;
   scene: Scene;
+  controller: Controller;
   player!: PlayableCharacter;
-  camera!: ArcRotateCamera;
+  camera!: TargetCamera;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.engine = new Engine(canvas, true);
     this.scene = new Scene(this.engine);
     this.scene.actionManager = new ActionManager(this.scene);
+    this.controller = new Controller(this);
   }
 
   async init() {
     this.createBaseScene();
     await this.createPlayer();
+    await this.createEnnemy();
     this.cameraSetup();
     this.initRenderLoop();
+    this.initController();
+  }
+
+  async createEnnemy() {
+    new Ennemy(
+      await SceneLoader.ImportMeshAsync(
+        null,
+        "./src/features/Ennemy/models/",
+        "Player.glb",
+        this.scene
+      ),
+      this
+    );
   }
 
   createBaseScene() {
-    //TODO: Faire une classe appart
     new HemisphericLight("light", new Vector3(0, 1, 0));
 
     const groundMat = new StandardMaterial("groundMat");
@@ -51,21 +69,27 @@ export class Game {
 
   async createPlayer() {
     this.player = new PlayableCharacter(
-      await importModel(this.scene, PLAYER_MODEL),
+      await SceneLoader.ImportMeshAsync(
+        null,
+        "./src/features/PlayableCharacter/models/",
+        PLAYER_MODEL,
+        this.scene
+      ),
       this
     );
+    this.player.initCommands();
   }
 
   cameraSetup() {
-    this.camera = new ArcRotateCamera(
+    this.camera = new ArcFollowCamera(
       "camera",
       -Math.PI / 2,
-      Math.PI / 2.5,
-      15,
-      new Vector3(0, 0, 0)
+      Math.PI / 4,
+      60,
+      this.player.root,
+      this.scene
     );
     this.camera.attachControl(this.canvas, true);
-    this.camera.setTarget(this.player.root);
   }
 
   initRenderLoop() {
@@ -77,7 +101,19 @@ export class Game {
     });
   }
 
+  initController() {
+    this.controller.handleCommands();
+  }
+
   getScene() {
     return this.scene;
+  }
+
+  getController() {
+    return this.controller;
+  }
+
+  getPlayer() {
+    return this.player;
   }
 }

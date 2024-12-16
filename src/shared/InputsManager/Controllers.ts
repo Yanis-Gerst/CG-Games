@@ -6,6 +6,7 @@ import {
 } from "@babylonjs/core";
 import { Command } from "./Commands/Command";
 import { baseKeys } from "../utils/utils";
+import { Game } from "../../Game";
 
 /*
 Le controller gère tous les entrer clavier et gère l'éxécution et la fin des commandes quelles touches sont activer
@@ -13,13 +14,13 @@ Le controller gère tous les entrer clavier et gère l'éxécution et la fin des
 
 export class Controller {
   private keysStatus: { [key: string]: boolean };
-  scene: Scene;
+  game: Game;
   public commands: Command[];
   private activeCommands: Command[];
 
-  constructor(scene: Scene) {
+  constructor(game: Game) {
     this.keysStatus = {};
-    this.scene = scene;
+    this.game = game;
     baseKeys.forEach((key) => (this.keysStatus[key] = false));
     this.commands = [];
     this.activeCommands = [];
@@ -57,13 +58,20 @@ export class Controller {
   }
 
   handleCommands() {
-    this.scene.onBeforeRenderObservable.add(() => {
+    this.game.getScene().onBeforeRenderObservable.add(() => {
       const finishCommand = this.activeCommands.filter(
         (cmd) => !cmd.condition(this)
       );
       this.activeCommands = this.commands.filter((cmd) => cmd.condition(this));
       this.activeCommands.forEach((cmd) => cmd.execute());
       finishCommand.forEach((cmd) => cmd.finish());
+      const commandPressing = new CustomEvent("commandPressing", {
+        detail: {
+          activeCommands: this.activeCommands,
+          commands: this.commands,
+        },
+      });
+      dispatchEvent(commandPressing);
     });
   }
 

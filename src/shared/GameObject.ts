@@ -3,15 +3,17 @@ import {
   ISceneLoaderAsyncResult,
   Vector3,
 } from "@babylonjs/core";
+import { Game } from "../Game";
 
 export class GameObject {
   model: ISceneLoaderAsyncResult;
   root: AbstractMesh;
+  game: Game;
 
-  constructor(model: ISceneLoaderAsyncResult) {
+  constructor(model: ISceneLoaderAsyncResult, game: Game) {
     this.model = model;
+    this.game = game;
     this.model.animationGroups.forEach((animation) => animation.stop());
-    console.log(this.model.animationGroups);
     this.root = this.model.meshes[0];
   }
 
@@ -26,6 +28,10 @@ export class GameObject {
     if (!animation)
       throw new Error(`Can't find animation with the name ${name}`);
     return animation;
+  }
+
+  getGame() {
+    return this.game;
   }
 
   playAnimation(name: string) {

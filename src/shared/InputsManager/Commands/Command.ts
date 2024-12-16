@@ -1,4 +1,4 @@
-import { Game } from "../../Game";
+import { Game } from "../../../Game";
 import { ICommand } from "../../utils/type";
 import { Controller } from "../Controllers";
 
@@ -11,15 +11,18 @@ finish: Une fonction qui execute quand la commande à finit d'être éxécuté. 
 
 export class Command implements ICommand {
   game: Game;
+  isExecuting = false;
 
   constructor(game: Game) {
     this.game = game;
   }
   execute() {
+    this.isExecuting = true;
     return;
   }
 
   finish() {
+    this.isExecuting = false;
     return;
   }
 
