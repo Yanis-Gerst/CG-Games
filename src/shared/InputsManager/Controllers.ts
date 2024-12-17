@@ -2,7 +2,6 @@ import {
   AbstractActionManager,
   ActionManager,
   ExecuteCodeAction,
-  Scene,
 } from "@babylonjs/core";
 import { Command } from "./Commands/Command";
 import { baseKeys } from "../utils/utils";

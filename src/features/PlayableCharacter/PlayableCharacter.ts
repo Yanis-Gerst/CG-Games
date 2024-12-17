@@ -1,28 +1,30 @@
-import { ISceneLoaderAsyncResult } from "@babylonjs/core";
-import { GameObject } from "../../shared/GameObject";
+import { AbstractMesh } from "@babylonjs/core";
+import { GameObject } from "../../shared/GameObject/GameObject";
 import { MovableKeys } from "../../shared/InputsManager/MovableKeys";
 import { Game } from "../../Game";
 import { IDirection } from "../../shared/utils/type";
 import { PlayerAnimation } from "./PlayerAnimation";
 import { Weapon } from "../Weapon/Weapon";
+import { IModel } from "../../shared/Models/interface";
+import { MovingState } from "../../shared/GameObject/MovingState";
 
 export class PlayableCharacter extends GameObject {
   movableKeys!: MovableKeys;
   speed = 0.5;
   invincibleTime = 200;
-  isMoving = false;
+  movingState: MovingState;
   hp: number;
   isInvincible = false;
   currentDirection: IDirection | null = null;
   playerAnimation: PlayerAnimation;
-  weapon: Weapon;
+  weapon: Weapon[];
 
-  constructor(model: ISceneLoaderAsyncResult, game: Game) {
+  constructor(model: IModel, game: Game) {
     super(model, game);
     this.playerAnimation = new PlayerAnimation(this);
     this.hp = 100;
-    this.root.setBoundingInfo(this.model.meshes[2].getBoundingInfo());
-    this.weapon = new Weapon(game);
+    this.weapon = [new Weapon(game)];
+    this.movingState = new MovingState();
   }
 
   initCommands() {
@@ -35,13 +37,13 @@ export class PlayableCharacter extends GameObject {
       const executingCommands = Object.values(
         this.movableKeys.getMoveCommand()
       ).filter((cmd) => cmd.isExecuting);
-      this.isMoving = executingCommands.length > 0;
-      this.currentDirection = this.isMoving
-        ? executingCommands[0].direction
-        : null;
+      this.movingState.setIsMoving(executingCommands.length > 0);
+      this.movingState.setDirection(
+        this.movingState.getIsMoving() ? executingCommands[0].direction : null
+      );
       this.playerAnimation.animate();
     });
-    this.weapon.activate();
+    this.weapon.forEach((weapon) => weapon.activate());
   }
 
   public takeDamage(damage: number) {

@@ -34,7 +34,7 @@ export class MoveCommand extends Command {
       //TODO: Chagne la vitesse en diago
       let positionToUpdate = this.gameObject.speed / this.axis.length;
       positionToUpdate = minus ? -positionToUpdate : positionToUpdate;
-      this.gameObject.root.position[currentAxi] += positionToUpdate;
+      this.gameObject.model.getPosition()[currentAxi] += positionToUpdate;
       this.gameObject.playAnimation("Rotation");
     });
   }

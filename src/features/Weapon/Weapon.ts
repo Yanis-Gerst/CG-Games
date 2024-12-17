@@ -12,7 +12,7 @@ export class Weapon {
   constructor(game: Game) {
     this.game = game;
     this.range = 10;
-    this.damage = 10;
+    this.damage = 30;
     this.cooldown = 1000;
   }
 
@@ -23,8 +23,8 @@ export class Weapon {
         (ennemy) =>
           Math.abs(
             Vector3.Distance(
-              this.game.getPlayer().root.position,
-              ennemy.root.position
+              this.game.getPlayer().model.getPosition(),
+              ennemy.model.getPosition()
             )
           ) <= this.range
       );

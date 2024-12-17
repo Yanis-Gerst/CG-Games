@@ -1,6 +1,7 @@
 import {
   ActionManager,
   ArcFollowCamera,
+  AssetContainer,
   Color3,
   Engine,
   HavokPlugin,
@@ -9,7 +10,6 @@ import {
   MeshBuilder,
   Observable,
   Scene,
-  SceneLoader,
   StandardMaterial,
   TargetCamera,
   Vector3,
@@ -18,8 +18,9 @@ import HavokPhysics from "@babylonjs/havok";
 import { Controller } from "./shared/InputsManager/Controllers";
 import { PlayableCharacter } from "./features/PlayableCharacter/PlayableCharacter";
 import { Ennemy } from "./features/Ennemy/Ennemy";
-
-const PLAYER_MODEL = "Player.glb";
+import { EnnemySpawner } from "./features/EnnemySpanwer/EnnemySpawner";
+import { testEnnemyModelFactory } from "./features/Ennemy/ennemies/TestEnnemy";
+import { ModelFactory } from "./shared/Models/ModelsFactory";
 
 export class Game {
   canvas: HTMLCanvasElement;
@@ -31,6 +32,7 @@ export class Game {
   camera!: TargetCamera;
   physicsPlugin!: HavokPlugin;
   collisionObservable!: Observable<IPhysicsCollisionEvent>;
+  assetContainer!: AssetContainer;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -38,10 +40,12 @@ export class Game {
     this.scene = new Scene(this.engine);
     this.scene.actionManager = new ActionManager(this.scene);
     this.controller = new Controller(this);
+    this.ennemy = [];
   }
 
   async init() {
     this.createBaseScene();
+    await this.importAsset();
     await this.initPhysics();
     await this.createPlayer();
     await this.createEnnemy();
@@ -50,18 +54,23 @@ export class Game {
     this.initController();
   }
 
+  async importAsset() {
+    return new Promise((resolve) => {
+      let assetLoaded = 0;
+      window.addEventListener("assetLoaded", () => {
+        assetLoaded++;
+        if (assetLoaded === ModelFactory.assetNumber) {
+          resolve(true);
+        }
+      });
+    });
+  }
+
   async createEnnemy() {
-    const aloneEnnemy = new Ennemy(
-      await SceneLoader.ImportMeshAsync(
-        null,
-        "./src/features/Ennemy/models/",
-        "Player.glb",
-        this.scene
-      ),
-      this,
-      new Vector3(15, this.getPlayer().root.position.y, 15)
-    );
-    this.ennemy = [aloneEnnemy];
+    const ennemySpawner = new EnnemySpawner(this);
+    setTimeout(() => {
+      ennemySpawner.spawnEnnemy(1);
+    }, 1000);
   }
 
   createBaseScene() {
@@ -75,16 +84,16 @@ export class Game {
     });
 
     ground.material = groundMat;
+    this.assetContainer = new AssetContainer(this.scene);
+    const sceneInitEvent = new CustomEvent("sceneInit", {
+      detail: { scene: this.scene, assetContainer: this.assetContainer },
+    });
+    dispatchEvent(sceneInitEvent);
   }
 
   async createPlayer() {
     this.player = new PlayableCharacter(
-      await SceneLoader.ImportMeshAsync(
-        null,
-        "./src/features/PlayableCharacter/models/",
-        PLAYER_MODEL,
-        this.scene
-      ),
+      testEnnemyModelFactory.getModel(),
       this
     );
     this.player.initCommands();
@@ -104,7 +113,7 @@ export class Game {
       -Math.PI / 2,
       Math.PI / 4,
       50,
-      this.player.root,
+      this.player.model.getRoot(),
       this.scene
     );
     this.camera.attachControl(this.canvas, true);
@@ -141,5 +150,9 @@ export class Game {
 
   getEnnemy() {
     return this.ennemy;
+  }
+
+  setEnnemy(ennemy: Ennemy[]) {
+    this.ennemy = ennemy;
   }
 }
