@@ -3,6 +3,19 @@ import { AssetContainer } from "@babylonjs/core";
 import { IModel } from "./interface";
 import { ModelsAssetContainer } from "./ModelsAssetContainer";
 
+export const createModelFactory = async (
+  filePath: string
+): Promise<ModelFactory> => {
+  return new Promise((resolve) => {
+    window.addEventListener("sceneInit", async (event) => {
+      const scene = (event as CustomEvent).detail.scene;
+      const modelFactory = new ModelFactory(filePath, scene);
+      await modelFactory.init();
+      resolve(modelFactory);
+    });
+  });
+};
+
 export class ModelFactory {
   static assetNumber = 0;
   private filePath: string;
@@ -28,6 +41,7 @@ export class ModelFactory {
     const assetLoaded = new CustomEvent("assetLoaded");
     dispatchEvent(assetLoaded);
   }
+
   getModel(): IModel {
     const model = new ModelsAssetContainer(
       this.modelContainer.instantiateModelsToScene((name) => name)

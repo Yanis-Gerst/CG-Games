@@ -7,6 +7,7 @@ export class ModelsAssetContainer implements IModel {
   constructor(model: InstantiatedEntries) {
     this.model = model;
     this.root = model.rootNodes[0] as Mesh;
+
     console.log(this.model);
   }
 

@@ -1,30 +1,36 @@
-import { AbstractMesh } from "@babylonjs/core";
-import { GameObject } from "../../shared/GameObject/GameObject";
 import { MovableKeys } from "../../shared/InputsManager/MovableKeys";
 import { Game } from "../../Game";
 import { IDirection } from "../../shared/utils/type";
 import { PlayerAnimation } from "./PlayerAnimation";
-import { Weapon } from "../Weapon/Weapon";
+import { IWeapon } from "../Weapon/Weapon";
 import { IModel } from "../../shared/Models/interface";
-import { MovingState } from "../../shared/GameObject/MovingState";
+import { Units } from "../../shared/GameObject/Units/Units";
+import { playerBaseStats } from "./playerBaseStats";
+import { MagicWand } from "../Weapon/MagicWand/MagicWand";
+import { LevelSystem } from "./LevelSystem";
 
-export class PlayableCharacter extends GameObject {
+interface PlayerCharacterState {
+  isInvincible: boolean;
+  invincibleTime: number;
+}
+
+export class PlayableCharacter extends Units {
   movableKeys!: MovableKeys;
-  speed = 0.5;
-  invincibleTime = 200;
-  movingState: MovingState;
-  hp: number;
-  isInvincible = false;
   currentDirection: IDirection | null = null;
   playerAnimation: PlayerAnimation;
-  weapon: Weapon[];
-
+  state: PlayerCharacterState;
+  weapon: IWeapon[];
+  levelSystem: LevelSystem;
   constructor(model: IModel, game: Game) {
     super(model, game);
     this.playerAnimation = new PlayerAnimation(this);
-    this.hp = 100;
-    this.weapon = [new Weapon(game)];
-    this.movingState = new MovingState();
+    this.weapon = [new MagicWand(game)];
+    this.state = {
+      isInvincible: false,
+      invincibleTime: 200,
+    };
+    this.getStatistical().setStatistical(playerBaseStats);
+    this.levelSystem = new LevelSystem(game, this);
   }
 
   initCommands() {
@@ -37,9 +43,11 @@ export class PlayableCharacter extends GameObject {
       const executingCommands = Object.values(
         this.movableKeys.getMoveCommand()
       ).filter((cmd) => cmd.isExecuting);
-      this.movingState.setIsMoving(executingCommands.length > 0);
-      this.movingState.setDirection(
-        this.movingState.getIsMoving() ? executingCommands[0].direction : null
+      this.getMovingState().setIsMoving(executingCommands.length > 0);
+      this.getMovingState().setDirection(
+        this.getMovingState().getIsMoving()
+          ? executingCommands[0].direction
+          : null
       );
       this.playerAnimation.animate();
     });
@@ -47,11 +55,19 @@ export class PlayableCharacter extends GameObject {
   }
 
   public takeDamage(damage: number) {
-    if (this.isInvincible || this.hp <= 0) return;
-    this.hp -= damage;
-    this.isInvincible = true;
+    if (this.state.isInvincible || this.getStatistical().hp <= 0) return;
+    this.getStatistical().hp -= damage;
+    this.state.isInvincible = true;
     setTimeout(() => {
-      this.isInvincible = false;
-    }, this.invincibleTime);
+      this.state.isInvincible = false;
+    }, this.state.invincibleTime);
+  }
+
+  getState() {
+    return this.state;
+  }
+
+  getLevelSystem() {
+    return this.levelSystem;
   }
 }

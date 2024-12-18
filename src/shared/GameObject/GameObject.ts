@@ -3,12 +3,15 @@ import { Game } from "../../Game";
 import { IModel } from "../Models/interface";
 
 export class GameObject {
+  static id = 0;
+  id: number;
   game: Game;
   model: IModel;
 
   constructor(model: IModel, game: Game) {
     this.model = model;
     this.game = game;
+    this.id = GameObject.id++;
   }
 
   setPosition(position: Vector3) {
@@ -28,6 +31,10 @@ export class GameObject {
     if (!animation)
       throw new Error(`Can't find animation with the name ${name}`);
     this.model.playAnimation(name);
+  }
+
+  getId() {
+    return this.id;
   }
 
   stopAnimation(name: string) {

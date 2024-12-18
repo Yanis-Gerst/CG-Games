@@ -32,7 +32,8 @@ export class MoveCommand extends Command {
       const minus = axi.includes("-");
       const currentAxi = axi.replace("-", "") as IAxis;
       //TODO: Chagne la vitesse en diago
-      let positionToUpdate = this.gameObject.speed / this.axis.length;
+      let positionToUpdate =
+        this.gameObject.getStatistical().moveSpeed / this.axis.length;
       positionToUpdate = minus ? -positionToUpdate : positionToUpdate;
       this.gameObject.model.getPosition()[currentAxi] += positionToUpdate;
       this.gameObject.playAnimation("Rotation");

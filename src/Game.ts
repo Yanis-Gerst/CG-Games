@@ -19,7 +19,7 @@ import { Controller } from "./shared/InputsManager/Controllers";
 import { PlayableCharacter } from "./features/PlayableCharacter/PlayableCharacter";
 import { Ennemy } from "./features/Ennemy/Ennemy";
 import { EnnemySpawner } from "./features/EnnemySpanwer/EnnemySpawner";
-import { testEnnemyModelFactory } from "./features/Ennemy/ennemies/TestEnnemy";
+import { testEnnemyModelFactory } from "./features/Ennemy/TestEnnemy/TestEnnemy";
 import { ModelFactory } from "./shared/Models/ModelsFactory";
 
 export class Game {
@@ -28,8 +28,8 @@ export class Game {
   scene: Scene;
   controller: Controller;
   player!: PlayableCharacter;
-  ennemy!: Ennemy[];
   camera!: TargetCamera;
+  ennemySpawner!: EnnemySpawner;
   physicsPlugin!: HavokPlugin;
   collisionObservable!: Observable<IPhysicsCollisionEvent>;
   assetContainer!: AssetContainer;
@@ -40,12 +40,13 @@ export class Game {
     this.scene = new Scene(this.engine);
     this.scene.actionManager = new ActionManager(this.scene);
     this.controller = new Controller(this);
-    this.ennemy = [];
   }
 
   async init() {
     this.createBaseScene();
+    console.log("Load assets");
     await this.importAsset();
+    console.log("Assets loaded");
     await this.initPhysics();
     await this.createPlayer();
     await this.createEnnemy();
@@ -67,9 +68,9 @@ export class Game {
   }
 
   async createEnnemy() {
-    const ennemySpawner = new EnnemySpawner(this);
+    this.ennemySpawner = new EnnemySpawner(this);
     setTimeout(() => {
-      ennemySpawner.spawnEnnemy(1);
+      this.ennemySpawner.spawnEnnemy(1);
     }, 1000);
   }
 
@@ -148,11 +149,7 @@ export class Game {
     return this.collisionObservable;
   }
 
-  getEnnemy() {
-    return this.ennemy;
-  }
-
-  setEnnemy(ennemy: Ennemy[]) {
-    this.ennemy = ennemy;
+  getEnnemySpawner() {
+    return this.ennemySpawner;
   }
 }
