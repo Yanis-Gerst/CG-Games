@@ -12,24 +12,24 @@ if (!canvas)
 
 const game = new Game(canvas);
 
-await game.init();
+game.init().then(() => {
+  game.getScene().onBeforeRenderObservable.add(() => {
+    const percentage =
+      (game.getPlayer().getStatistical().hp /
+        game.getPlayer().getStatistical().maxHp) *
+      100;
+    health.style.width = `${percentage}%`;
+  });
 
-game.getScene().onBeforeRenderObservable.add(() => {
-  const percentage =
-    (game.getPlayer().getStatistical().hp /
-      game.getPlayer().getStatistical().maxHp) *
-    100;
-  health.style.width = `${percentage}%`;
-});
-
-game.getScene().onBeforeRenderObservable.add(() => {
-  const percentage =
-    (game.getPlayer().getLevelSystem().getXp() /
-      game.getPlayer().getLevelSystem().getMaxXp()) *
-    100;
-  xp.style.width = `${percentage}%`;
-  levelDisplay.innerHTML = `Level: ${game
-    .getPlayer()
-    .getLevelSystem()
-    .getLevel()}`;
+  game.getScene().onBeforeRenderObservable.add(() => {
+    const percentage =
+      (game.getPlayer().getLevelSystem().getXp() /
+        game.getPlayer().getLevelSystem().getMaxXp()) *
+      100;
+    xp.style.width = `${percentage}%`;
+    levelDisplay.innerHTML = `Level: ${game
+      .getPlayer()
+      .getLevelSystem()
+      .getLevel()}`;
+  });
 });
