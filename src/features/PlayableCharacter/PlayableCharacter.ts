@@ -7,12 +7,34 @@ import { IModel } from "../../shared/Models/interface";
 import { Units } from "../../shared/GameObject/Units/Units";
 import { playerBaseStats } from "./playerBaseStats";
 import { MagicWand } from "../Weapon/MagicWand/MagicWand";
-import { LevelSystem } from "./LevelSystem";
+import { LevelSystem } from "../LevelSystem/LevelSystem";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import { getDistanceBetween } from "../../shared/utils/utils";
+import {
+  createModelFactory,
+  ModelFactory,
+} from "../../shared/Models/ModelsFactory";
 
 interface PlayerCharacterState {
   isInvincible: boolean;
   invincibleTime: number;
 }
+
+let modelPlayerFactory: ModelFactory;
+
+const setupModel = (model: IModel) => {
+  model
+    .getRoot()
+    .setBoundingInfo(model.getRoot().getChildMeshes()[0].getBoundingInfo());
+  model.getRoot().showBoundingBox = true;
+};
+
+createModelFactory("./src/features/PlayableCharacter/models/Player.glb").then(
+  (modelFactory) => {
+    modelFactory.setGetSetup(setupModel);
+    modelPlayerFactory = modelFactory;
+  }
+);
 
 export class PlayableCharacter extends Units {
   movableKeys!: MovableKeys;
@@ -21,8 +43,8 @@ export class PlayableCharacter extends Units {
   state: PlayerCharacterState;
   weapon: IWeapon[];
   levelSystem: LevelSystem;
-  constructor(model: IModel, game: Game) {
-    super(model, game);
+  constructor(game: Game) {
+    super(modelPlayerFactory.getModel(), game);
     this.playerAnimation = new PlayerAnimation(this);
     this.weapon = [new MagicWand(game)];
     this.state = {
@@ -30,7 +52,7 @@ export class PlayableCharacter extends Units {
       invincibleTime: 200,
     };
     this.getStatistical().setStatistical(playerBaseStats);
-    this.levelSystem = new LevelSystem(game, this);
+    this.levelSystem = new LevelSystem(this);
   }
 
   initCommands() {
@@ -61,6 +83,10 @@ export class PlayableCharacter extends Units {
     setTimeout(() => {
       this.state.isInvincible = false;
     }, this.state.invincibleTime);
+  }
+
+  getDistanceToPlayer(position: Vector3) {
+    return getDistanceBetween(this.model.getPosition(), position);
   }
 
   getState() {

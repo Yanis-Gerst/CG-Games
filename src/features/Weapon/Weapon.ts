@@ -1,7 +1,8 @@
-import { Observer, Scene, Vector3 } from "@babylonjs/core";
+import { Observer, Scene } from "@babylonjs/core";
 import { Game } from "../../Game";
 import { Ennemy } from "../Ennemy/Ennemy";
 import { WeaponStatistical } from "./WeaponStatistical";
+import { DisplayDamage } from "./DisplayDamage";
 
 export interface IWeapon {
   getName(): string;
@@ -21,7 +22,7 @@ export class Weapon {
   private weaponStatistical: WeaponStatistical;
   private state: IWeaponState;
   private weaponObserver: Observer<Scene> | null = null;
-
+  private displayDamage: DisplayDamage;
   constructor(game: Game, name: string) {
     this.game = game;
     this.name = name;
@@ -29,12 +30,18 @@ export class Weapon {
     this.state = {
       onColdown: false,
     };
+    this.displayDamage = new DisplayDamage(game);
   }
-
-  getDistanceToPlayer(position: Vector3) {
-    return Math.abs(
-      Vector3.Distance(this.getGame().getPlayer().model.getPosition(), position)
+  public attack(ennemy: Ennemy) {
+    const dmg = this.getGame()
+      .getPlayer()
+      .getStatistical()
+      .getDamageAttack(this);
+    console.log(
+      `Attack with ${this.getName()} on ${ennemy.getId()} do ${dmg} damage`
     );
+    ennemy.takeDamage(dmg);
+    this.displayDamage.displayDamage(dmg, ennemy.model.getPosition());
   }
 
   protected ennemyInRange(): Ennemy[] {
@@ -43,7 +50,9 @@ export class Weapon {
       .getEnnemies()
       .filter(
         (ennemy) =>
-          this.getDistanceToPlayer(ennemy.model.getPosition()) <=
+          this.game
+            .getPlayer()
+            .getDistanceToPlayer(ennemy.model.getPosition()) <=
           this.getWeaponStatistical().getRange()
       );
   }

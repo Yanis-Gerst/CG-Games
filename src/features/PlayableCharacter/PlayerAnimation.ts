@@ -7,7 +7,7 @@ export class PlayerAnimation {
   }
 
   public animate() {
-    if (this.playableCharacter.movingState.getIsMoving()) {
+    if (this.playableCharacter.getMovingState().getIsMoving()) {
       this.playableCharacter.playAnimation("Rotation");
     } else {
       this.playableCharacter.stopAnimation("Rotation");

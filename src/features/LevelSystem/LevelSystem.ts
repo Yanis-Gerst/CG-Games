@@ -1,16 +1,13 @@
-import { Game } from "../../Game";
-import { PlayableCharacter } from "./PlayableCharacter";
+import { Units } from "../../shared/GameObject/Units/Units";
 
 export class LevelSystem {
-  private game: Game;
-  private player: PlayableCharacter;
+  private unit: Units;
   private level: number;
   private xp: number;
   private maxXp: number;
 
-  constructor(game: Game, player: PlayableCharacter) {
-    this.game = game;
-    this.player = player;
+  constructor(unit: Units) {
+    this.unit = unit;
     this.level = 1;
     this.xp = 0;
     this.maxXp = 100;
@@ -31,13 +28,13 @@ export class LevelSystem {
     this.level++;
     this.xp = 0;
     this.maxXp = this.getMaxXpFormula();
-    this.player.getStatistical().maxHp += 10;
-    this.player.getStatistical().attack_damage += 1;
-    this.player.getStatistical().moveSpeed += 0.1;
-    this.player.getStatistical().defense += 1;
-    this.player.getStatistical().criticalChance += 0.1;
-    this.player.getStatistical().criticalDamage += 1;
-    this.player.getStatistical().dodge += 0.1;
+    this.unit.getStatistical().maxHp += 10;
+    this.unit.getStatistical().attack_damage += 1;
+    this.unit.getStatistical().moveSpeed += 0.1;
+    this.unit.getStatistical().defense += 1;
+    this.unit.getStatistical().criticalChance += 0.1;
+    this.unit.getStatistical().criticalDamage += 1;
+    this.unit.getStatistical().dodge += 0.1;
   }
 
   getMaxXpFormula() {
