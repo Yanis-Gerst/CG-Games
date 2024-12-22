@@ -2,25 +2,21 @@ import {
   ActionManager,
   ArcFollowCamera,
   AssetContainer,
-  Color3,
   Engine,
   HavokPlugin,
   HemisphericLight,
   IPhysicsCollisionEvent,
-  MeshBuilder,
   Observable,
   Scene,
-  StandardMaterial,
   TargetCamera,
   Vector3,
 } from "@babylonjs/core";
 import HavokPhysics from "@babylonjs/havok";
 import { Controller } from "./shared/InputsManager/Controllers";
 import { PlayableCharacter } from "./features/PlayableCharacter/PlayableCharacter";
-import { Ennemy } from "./features/Ennemy/Ennemy";
 import { EnnemySpawner } from "./features/EnnemySpanwer/EnnemySpawner";
-import { testEnnemyModelFactory } from "./features/Ennemy/TestEnnemy/TestEnnemy";
 import { ModelFactory } from "./shared/Models/ModelsFactory";
+import { Map } from "./features/Map/Map";
 
 export class Game {
   canvas: HTMLCanvasElement;
@@ -33,13 +29,14 @@ export class Game {
   physicsPlugin!: HavokPlugin;
   collisionObservable!: Observable<IPhysicsCollisionEvent>;
   assetContainer!: AssetContainer;
-
+  map: Map;
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.engine = new Engine(canvas, true);
     this.scene = new Scene(this.engine);
     this.scene.actionManager = new ActionManager(this.scene);
     this.controller = new Controller(this);
+    this.map = new Map(this.scene);
   }
 
   async init() {
@@ -47,12 +44,17 @@ export class Game {
     console.log("Load assets");
     await this.importAsset();
     console.log("Assets loaded");
+    await this.createMap();
     await this.initPhysics();
     await this.createPlayer();
     await this.createEnnemy();
     this.cameraSetup();
     this.initRenderLoop();
     this.initController();
+  }
+
+  async createMap() {
+    await this.map.generateMap();
   }
 
   async importAsset() {
@@ -71,21 +73,12 @@ export class Game {
     this.ennemySpawner = new EnnemySpawner(this);
     setTimeout(() => {
       this.ennemySpawner.spawnEnnemy(1);
-    }, 1000);
+    }, 100);
   }
 
   createBaseScene() {
     new HemisphericLight("light", new Vector3(0, 1, 0));
 
-    const groundMat = new StandardMaterial("groundMat");
-    groundMat.diffuseColor = Color3.FromHexString("#7c7f7a");
-    const ground = MeshBuilder.CreateGround("ground", {
-      width: 100,
-      height: 100,
-    });
-
-    ground.material = groundMat;
-    this.assetContainer = new AssetContainer(this.scene);
     const sceneInitEvent = new CustomEvent("sceneInit", {
       detail: { scene: this.scene, assetContainer: this.assetContainer },
     });
@@ -93,10 +86,7 @@ export class Game {
   }
 
   async createPlayer() {
-    this.player = new PlayableCharacter(
-      testEnnemyModelFactory.getModel(),
-      this
-    );
+    this.player = new PlayableCharacter(this);
     this.player.initCommands();
   }
 
@@ -113,7 +103,7 @@ export class Game {
       "camera",
       -Math.PI / 2,
       Math.PI / 4,
-      50,
+      20,
       this.player.model.getRoot(),
       this.scene
     );

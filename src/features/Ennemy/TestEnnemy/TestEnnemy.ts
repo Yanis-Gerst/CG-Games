@@ -8,7 +8,7 @@ import {
 import { TestEnnemyAnimation } from "./TestEnnemyAnimation";
 import { IModel } from "../../../shared/Models/interface";
 import { ennemyBaseStats } from "./ennemyBaseStats";
-export let testEnnemyModelFactory: ModelFactory;
+let testEnnemyModelFactory: ModelFactory;
 
 const setupModel = (model: IModel) => {
   model
@@ -17,7 +17,7 @@ const setupModel = (model: IModel) => {
   model.getRoot().showBoundingBox = true;
 };
 
-createModelFactory("./src/features/Ennemy/models/Player.glb").then(
+createModelFactory("./src/features/Ennemy/models/Ennemy.glb").then(
   (modelFactory) => {
     modelFactory.setGetSetup(setupModel);
     testEnnemyModelFactory = modelFactory;

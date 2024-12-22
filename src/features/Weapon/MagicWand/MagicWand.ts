@@ -1,5 +1,4 @@
 import { Game } from "../../../Game";
-import { Ennemy } from "../../Ennemy/Ennemy";
 import { IWeapon, Weapon } from "../Weapon";
 import { magicWandBaseStats } from "./MagicWandBaseStats";
 
@@ -15,8 +14,12 @@ export class MagicWand extends Weapon implements IWeapon {
     let closestEnnemy = ennemies[0];
     ennemies.forEach((ennemy) => {
       if (
-        this.getDistanceToPlayer(ennemy.model.getPosition()) <
-        this.getDistanceToPlayer(closestEnnemy.model.getPosition())
+        this.getGame()
+          .getPlayer()
+          .getDistanceToPlayer(ennemy.model.getPosition()) <
+        this.getGame()
+          .getPlayer()
+          .getDistanceToPlayer(closestEnnemy.model.getPosition())
       ) {
         closestEnnemy = ennemy;
       }
@@ -43,16 +46,5 @@ export class MagicWand extends Weapon implements IWeapon {
 
   public deactivate() {
     this.getWeaponObserver()?.remove();
-  }
-
-  public attack(ennemy: Ennemy) {
-    const dmg = this.getGame()
-      .getPlayer()
-      .getStatistical()
-      .getDamageAttack(this);
-    console.log(
-      `Attack with ${this.getName()} on ${ennemy.getId()} do ${dmg} damage`
-    );
-    ennemy.takeDamage(dmg);
   }
 }
