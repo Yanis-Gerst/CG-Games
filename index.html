@@ -14,9 +14,58 @@
     <div id="app">
       <canvas
         id="renderCanvas"
-        class="w-full h-full"
+        class="w-screen h-screen"
         touch-action="none"
       ></canvas>
+      <div
+        id="levelDisplay"
+        style="
+          position: absolute;
+          top: 80px;
+          left: 20px;
+          width: 200px;
+          height: 20px;
+          color: white;
+          font-size: 16px;
+          font-weight: bold;
+        "
+      >
+        Level: <span id="level">1</span>
+      </div>
+      <div
+        id="healthBar"
+        style="
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          width: 200px;
+          height: 20px;
+          background-color: #333;
+          border: 2px solid #000;
+        "
+      >
+        <div
+          id="health"
+          style="width: 100%; height: 100%; background-color: #00ff00"
+        ></div>
+      </div>
+      <div
+        id="xpBar"
+        style="
+          position: absolute;
+          top: 50px;
+          left: 20px;
+          width: 200px;
+          height: 20px;
+          background-color: #333;
+          border: 2px solid #000;
+        "
+      >
+        <div
+          id="xp"
+          style="width: 0%; height: 100%; background-color: #0088ff"
+        ></div>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
