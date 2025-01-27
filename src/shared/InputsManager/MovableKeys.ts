@@ -1,8 +1,8 @@
 import { IDirection } from "../utils/type";
-import { MoveCommandFactory } from "../../features/Mouvement/MoveCommandFactory";
 import { Game } from "../../Game";
-import { PlayableCharacter } from "../../features/PlayableCharacter/PlayableCharacter";
-import { MoveCommand } from "../../features/Mouvement/MoveCommand";
+import { PlayableCharacter } from "../../Game/features/PlayableCharacter/PlayableCharacter";
+import { MoveCommand } from "../../Game/features/Mouvement/MoveCommand";
+import { MoveCommandFactory } from "../../features/Mouvement/MoveCommandFactory";
 
 type IMoveCommand = {
   [key in IDirection]: MoveCommand;

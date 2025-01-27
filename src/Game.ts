@@ -16,6 +16,8 @@ import { Controller } from "./shared/InputsManager/Controllers";
 import { PlayableCharacter } from "./features/PlayableCharacter/PlayableCharacter";
 import { EnnemySpawner } from "./features/EnnemySpanwer/EnnemySpawner";
 import { ModelFactory } from "./shared/Models/ModelsFactory";
+import { RenderLoop } from "./features/RenderLoop/RenderLoop";
+import { BrowserInputController } from "./shared/InputsManager/BrowserInputController";
 import { Map } from "./features/Map/Map";
 
 export class Game {
@@ -23,20 +25,25 @@ export class Game {
   engine: Engine;
   scene: Scene;
   controller: Controller;
+  globalController: Controller;
   player!: PlayableCharacter;
   camera!: TargetCamera;
   ennemySpawner!: EnnemySpawner;
   physicsPlugin!: HavokPlugin;
   collisionObservable!: Observable<IPhysicsCollisionEvent>;
   assetContainer!: AssetContainer;
+  renderLoop: RenderLoop;
   map: Map;
+  pause: boolean = false;
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
     this.engine = new Engine(canvas, true);
     this.scene = new Scene(this.engine);
     this.scene.actionManager = new ActionManager(this.scene);
     this.controller = new Controller(this);
+    this.globalController = new BrowserInputController(this);
     this.map = new Map(this.scene);
+    this.renderLoop = new RenderLoop(this);
   }
 
   async init() {
@@ -49,8 +56,8 @@ export class Game {
     await this.createPlayer();
     await this.createEnnemy();
     this.cameraSetup();
-    this.initRenderLoop();
     this.initController();
+    this.initRenderLoop();
   }
 
   async createMap() {
@@ -71,8 +78,12 @@ export class Game {
 
   async createEnnemy() {
     this.ennemySpawner = new EnnemySpawner(this);
-    setTimeout(() => {
-      this.ennemySpawner.spawnEnnemy(1);
+    this.ennemySpawner.getWaveObservable().subscribe((wave: number) => {
+      if (wave === 3) this.ennemySpawner.setIsPlaying(false);
+    });
+    this.renderLoop.setTimeoutOnFrame(() => {
+      console.log("YO ennemy");
+      this.ennemySpawner.startWave();
     }, 100);
   }
 
@@ -111,16 +122,13 @@ export class Game {
   }
 
   initRenderLoop() {
-    this.engine.runRenderLoop(() => {
-      this.scene.render();
-    });
-    window.addEventListener("resize", () => {
-      this.engine.resize();
-    });
+    this.renderLoop.start();
   }
 
   initController() {
     this.controller.handleCommands();
+    this.globalController.registerKeyActivation(this.scene.actionManager);
+    this.globalController.handleCommands();
   }
 
   getScene() {
@@ -129,6 +137,10 @@ export class Game {
 
   getController() {
     return this.controller;
+  }
+
+  getGlobalController() {
+    return this.globalController;
   }
 
   getPlayer() {
@@ -141,5 +153,13 @@ export class Game {
 
   getEnnemySpawner() {
     return this.ennemySpawner;
+  }
+
+  getPause() {
+    return this.pause;
+  }
+
+  setPause(pause: boolean) {
+    this.pause = pause;
   }
 }

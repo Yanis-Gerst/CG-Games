@@ -1,11 +1,11 @@
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
-import { Game } from "../../Game";
 import { PickableMaterials } from "../../shared/GameObject/PickableMaterials/PickableMaterials";
 import {
   createModelFactory,
   ModelFactory,
 } from "../../shared/Models/ModelsFactory";
 import { ObservableProvider } from "../../shared/Observable/Observable";
+import { Game } from "../../Game";
 
 let xpMaterialsModelFactory: ModelFactory;
 

@@ -56,21 +56,25 @@ export class Controller {
   }
 
   handleCommands() {
-    this.game.getScene().onBeforeRenderObservable.add(() => {
-      const finishCommand = this.activeCommands.filter(
-        (cmd) => !cmd.condition(this)
-      );
-      this.activeCommands = this.commands.filter((cmd) => cmd.condition(this));
-      this.activeCommands.forEach((cmd) => cmd.execute());
-      finishCommand.forEach((cmd) => cmd.finish());
-      const commandPressing = new CustomEvent("commandPressing", {
-        detail: {
-          activeCommands: this.activeCommands,
-          commands: this.commands,
-        },
-      });
-      dispatchEvent(commandPressing);
+    this.game
+      .getScene()
+      .onBeforeRenderObservable.add(() => this.handleCommandLifeCycleCommand());
+  }
+
+  handleCommandLifeCycleCommand() {
+    const finishCommand = this.activeCommands.filter(
+      (cmd) => !cmd.condition(this)
+    );
+    this.activeCommands = this.commands.filter((cmd) => cmd.condition(this));
+    this.activeCommands.forEach((cmd) => cmd.execute());
+    finishCommand.forEach((cmd) => cmd.finish());
+    const commandPressing = new CustomEvent("commandPressing", {
+      detail: {
+        activeCommands: this.activeCommands,
+        commands: this.commands,
+      },
     });
+    dispatchEvent(commandPressing);
   }
 
   oneKeyIsPress(): boolean {

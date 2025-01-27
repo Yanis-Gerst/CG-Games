@@ -1,72 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Vite + TS</title>
 
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
-    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
-  </head>
-  <body>
-    <div id="app">
-      <canvas
-        id="renderCanvas"
-        class="w-screen h-screen"
-        touch-action="none"
-      ></canvas>
-      <div
-        id="levelDisplay"
-        style="
-          position: absolute;
-          top: 80px;
-          left: 20px;
-          width: 200px;
-          height: 20px;
-          color: white;
-          font-size: 16px;
-          font-weight: bold;
-        "
-      >
-        Level: <span id="level">1</span>
-      </div>
-      <div
-        id="healthBar"
-        style="
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          width: 200px;
-          height: 20px;
-          background-color: #333;
-          border: 2px solid #000;
-        "
-      >
-        <div
-          id="health"
-          style="width: 100%; height: 100%; background-color: #00ff00"
-        ></div>
-      </div>
-      <div
-        id="xpBar"
-        style="
-          position: absolute;
-          top: 50px;
-          left: 20px;
-          width: 200px;
-          height: 20px;
-          background-color: #333;
-          border: 2px solid #000;
-        "
-      >
-        <div
-          id="xp"
-          style="width: 0%; height: 100%; background-color: #0088ff"
-        ></div>
-      </div>
-    </div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+        <script src="https://cdn.babylonjs.com/babylon.js"></script>
+        <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+        <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <div class="w-screen h-screen grid items-center">
+                <div class="flex flex-col gap-2 items-center">
+                    <h1 class="text-center">LE GAMING</h1>
+                    <button id="game-btn" class="bg-orange-400 rounded-md px-4 py-2 w-fit">Jouer</button>
+                </div>
+            </div>
+
+        <script type="module" src="/src/main.ts"></script>
+    </body>
 </html>

@@ -1,13 +1,13 @@
 import { Scene, SceneLoader, Vector3 } from "@babylonjs/core";
 
-export const baseKeys = ["z", "q", "d", "s", "a"] as const;
+export const baseKeys = ["z", "q", "d", "s", "a", "escape"] as const;
 
 export const importModel = async (scene: Scene, fileName: string) => {
   return await SceneLoader.ImportMeshAsync(
     "",
     "./src/models/",
     fileName,
-    scene
+    scene,
   );
 };
 

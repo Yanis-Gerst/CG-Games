@@ -1,5 +1,4 @@
 import { Vector3 } from "@babylonjs/core";
-import { Game } from "../../../Game";
 import { Ennemy } from "../Ennemy";
 import {
   createModelFactory,
@@ -8,6 +7,7 @@ import {
 import { TestEnnemyAnimation } from "./TestEnnemyAnimation";
 import { IModel } from "../../../shared/Models/interface";
 import { ennemyBaseStats } from "./ennemyBaseStats";
+import { Game } from "../../../Game";
 let testEnnemyModelFactory: ModelFactory;
 
 const setupModel = (model: IModel) => {

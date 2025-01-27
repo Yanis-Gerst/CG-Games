@@ -1,7 +1,7 @@
 import { Vector3 } from "@babylonjs/core";
-import { Game } from "../../Game";
 import { IModel } from "../../shared/Models/interface";
 import { Units } from "../../shared/GameObject/Units/Units";
+import { Game } from "../../Game";
 
 interface EnnemyState {
   isIntersectionPlayer: boolean;
@@ -16,9 +16,7 @@ export class Ennemy extends Units {
       isIntersectionPlayer: false,
     };
     this.model.setPosition(initPosition);
-    setTimeout(() => {
-      this.move();
-    }, 100);
+    this.move();
   }
 
   getState() {

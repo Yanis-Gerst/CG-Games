@@ -1,8 +1,8 @@
 import { Observer, Scene } from "@babylonjs/core";
-import { Game } from "../../Game";
 import { Ennemy } from "../Ennemy/Ennemy";
 import { WeaponStatistical } from "./WeaponStatistical";
 import { DisplayDamage } from "./DisplayDamage";
+import { Game } from "../../Game";
 
 export interface IWeapon {
   getName(): string;

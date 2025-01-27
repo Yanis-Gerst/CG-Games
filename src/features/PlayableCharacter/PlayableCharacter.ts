@@ -1,5 +1,4 @@
 import { MovableKeys } from "../../shared/InputsManager/MovableKeys";
-import { Game } from "../../Game";
 import { IDirection } from "../../shared/utils/type";
 import { PlayerAnimation } from "./PlayerAnimation";
 import { IWeapon } from "../Weapon/Weapon";
@@ -14,6 +13,7 @@ import {
   createModelFactory,
   ModelFactory,
 } from "../../shared/Models/ModelsFactory";
+import { Game } from "../../Game";
 
 interface PlayerCharacterState {
   isInvincible: boolean;
@@ -57,6 +57,7 @@ export class PlayableCharacter extends Units {
 
   initCommands() {
     this.movableKeys = new MovableKeys(this.game, this);
+    //TODO: A refaire le controller keyActivation
     this.game
       .getController()
       .registerKeyActivation(this.game.scene.actionManager);
